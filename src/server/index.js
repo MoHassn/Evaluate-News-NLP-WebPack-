@@ -1,23 +1,38 @@
-var path = require('path')
-const express = require('express')
-const mockAPIResponse = require('./mockAPI.js')
+require("dotenv").config();
+var path = require("path");
+const express = require("express");
+const axios = require("axios");
 
-const app = express()
+const mockAPIResponse = require("./mockAPI.js");
 
-app.use(express.static('dist'))
+const app = express();
 
-console.log(__dirname)
+app.use(express.static("dist"));
 
-app.get('/', function (req, res) {
-    // res.sendFile('dist/index.html')
-    res.sendFile(path.resolve('src/client/views/index.html'))
-})
+console.log(__dirname);
+
+app.get("/", function (req, res) {
+  // res.sendFile('dist/index.html')
+  res.sendFile(path.resolve("src/client/views/index.html"));
+});
 
 // designates what port the app will listen to for incoming requests
 app.listen(8080, function () {
-    console.log('Example app listening on port 8080!')
-})
+  console.log("Example app listening on port 8080!");
+});
 
-app.get('/test', function (req, res) {
-    res.send(mockAPIResponse)
-})
+app.post("/test", async function (req, res) {
+  console.log("body", req.body);
+  const response = await axios({
+    url: "https://api.meaningcloud.com/sentiment-2.1",
+    method: "POST",
+    params: {
+      key: process.env.API_KEY,
+      lang: "en",
+      url: "https://flaviocopes.com/webhooks/",
+    },
+  });
+  const data = response.data;
+  console.log("data", response.data);
+  res.send(data);
+});
